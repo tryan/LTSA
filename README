@@ -1,0 +1,5 @@
+Implementation of the Long Term Spectral Average as described by the Scripps Institute of Oceanography here: http://cetus.ucsd.edu/technologies_LTSA.html
+
+An LTSA is a spectrogram for visualizing acoustic activity in relatively long recordings. It does not capture much, if any, detail of individual sounds but does make it easy to see the larger patterns in the recording.
+
+The Scripps Institute implementation of the LTSA is open source as part of the "Triton" package of Matlab programs they have released. My implementation is written without having studied theirs, and as such it is almost certainly not an identical algorithm, but rather one with similar goals. 
