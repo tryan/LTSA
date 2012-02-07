@@ -53,7 +53,7 @@ ltsa = zeros(nfft/2, ndivs);
 
 for i = 1:ndivs
     div = divs(:, i);
-    ltsa(:, i) = calc_spectrum(div, subdiv_len, nfft);
+    ltsa(:, i) = single(calc_spectrum(div, subdiv_len, nfft));
 end
 
 end % ltsa_process_data
