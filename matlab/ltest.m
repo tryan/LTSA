@@ -12,10 +12,11 @@ noverlap = subdiv_len/2;
 
 ltsa = ltsa_process_data(sig, div_len, subdiv_len, noverlap, nfft);
 
-clear sig;
 
 h = [0 length(sig)/fs];
 v = [0 fs/2];
 
 % conversion to double necessary for octave's imagesc() not to crash
-ltsa_view(double(ltsa), length(sig)/fs, fs, h, v);
+ltsa_view(double(ltsa), fs, h(2));
+
+clear sig;
