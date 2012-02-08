@@ -57,12 +57,13 @@ data = data(1 : ndivs * div_len);
 % separate divisions into columns
 divs = reshape(data, div_len, ndivs);
 
-ltsa = zeros(nfft/2, ndivs);
+% allocate image
+ltsa = single(zeros(nfft/2, ndivs));
 
 for i = 1:ndivs
     div = divs(:, i);
     tmp = calc_spectrum(div, subdiv_len, nfft, noverlap);
-    ltsa(:, i) = single(tmp);
+    ltsa(:, i) = single( log(tmp) );
 end
 
 end % ltsa_process_data
@@ -77,6 +78,7 @@ function spectrum = calc_spectrum(div, subdiv_len, nfft, noverlap)
 spectrum = zeros(nfft/2, 1);
 window = hanning(subdiv_len);
 slip = subdiv_len - noverlap;
+assert(slip > 0, 'overlap exceeds subdiv_len');
 
 lo = 1;
 hi = subdiv_len;
