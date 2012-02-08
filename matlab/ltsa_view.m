@@ -1,8 +1,8 @@
-function h = ltsa_view(ltsa, duration, fs, time_range, freq_range)
+function h = ltsa_view(ltsa, fs, time_range, freq_range)
 
-h = time_range;
-v = freq_range;
-imagesc(h, v, ltsa);
+x = time_range;
+y = freq_range;
+h = imagesc(x, y, ltsa);
 set(gca, 'YDir', 'normal');
 
 end
