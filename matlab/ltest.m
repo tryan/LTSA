@@ -17,6 +17,6 @@ h = [0 length(sig)/fs];
 v = [0 fs/2];
 
 % conversion to double necessary for octave's imagesc() not to crash
-ltsa_view(double(ltsa), fs, h(2));
+ltsa_view(double(ltsa), fs, length(sig));
 
 clear sig;
