@@ -1,5 +1,4 @@
-function ltsa = ltsa_process_data(data, div_len, subdiv_len, ...
-    noverlap, nfft)
+function ltsa = ltsa_process(data, div_len, subdiv_len, noverlap, nfft)
 %{
 Process raw audio data into an LTSA image. 
 
