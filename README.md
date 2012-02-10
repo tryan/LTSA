@@ -15,8 +15,18 @@ The Scripps Institute implementation of the LTSA is open source as part of the "
     * Each division contains at least one subdivision. The subdivisions may or may not overlap. The subdivisions are windowed with a Hanning window and their spectra averaged together to represent the division
     * Usually called "subdiv" in codebase
 
-#Usage
+# Usage
 
-The ltsa_run script is the easiest way to compute an LTSA. Alternatively, you can call ltsa_process() directly. The ltsa_run script currently reads the entire audio file into memory before processing -- support is in forthcoming for piecewise processing of long files. 
+The `ltsa_run` script is the easiest way to compute an LTSA. Alternatively, you can call `ltsa_process()` directly. The `ltsa_run` script currently reads the entire audio file into memory before processing -- support is forthcoming for piecewise processing of long files. 
 
-The recommended way to save an LTSA is to either save the raw ltsa_process() output or save the figure (File -> Save As in Matlab, `print` in Octave) as imwrite will not attach axis ticks, labels, etc.
+In `ltsa_run` there are a number of variables that control the LTSA computation:
+* *file*: path to the file to be processed
+* *div_len*: length of a division, in samples
+* *subdiv_len*: length of a subdivision, in samples
+* *nfft*: can be used to pad the FFT if desired
+* *noverlap*: subdivision overlap, in samples
+
+`ltsa_view()` displays the resulting LTSA. The fourth and fifth arguments specify time and frequency ranges to display.
+
+The recommended way to save an LTSA is to either save the raw `ltsa_process()` output or save the figure (`File -> Save As` in Matlab, `print` in Octave or Matlab) as imwrite will not attach axis ticks, labels, etc.
+
