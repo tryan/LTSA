@@ -1,6 +1,8 @@
 Process large files in pieces
 
-Viewing functionality for LTSA images
+Enhanced viewing functionality for LTSA images
+    -Interpolation of low resolution images
+    -Color map scaling
 
 Save images to hard disk
 
