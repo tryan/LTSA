@@ -82,16 +82,13 @@ assert(slip > 0, 'overlap exceeds subdiv_len');
 lo = 1;
 hi = subdiv_len;
 nsubdivs = 0;
-while 1
+while hi <= length(div)
     nsubdivs = nsubdivs + 1;
     subdiv = div(lo:hi);
     tmp = fft(subdiv .* window, nfft);
     spectrum = spectrum + abs( tmp(1:nfft/2) );
     lo = lo + slip;
     hi = hi + slip;
-    if hi > length(div)
-        break
-    end
 end
     
 % average rather than sum
