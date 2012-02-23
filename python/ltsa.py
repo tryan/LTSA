@@ -5,21 +5,33 @@ from scipy.io.wavfile import read as wavread
 import matplotlib.pyplot as plt
 from scipy.misc import imresize
 
+class InputError(Exception):
+    
+    def __init__(self, detail):
+        self.detail = detail
+
 class LTSA():
 
     # initialize with default parameters
     def __init__(self, _file, channel=0):
 
-        if _file[-4:] == '.wav':
+        if isinstance(_file, str) and _file[-4:] == '.wav':
             self.fs, self.raw = wavread(_file)
             if np.ndim(self.raw) > 1:
                 self.raw = self.raw[:,channel] # take only one channel
+        else:
+            raise InputError('Input must be a path to a .wav file')
 
         # defaults for user adjustable values
         self.div_len = np.round(self.fs/2) # one second divisions
         self.subdiv_len = 2**np.round(np.log2(self.fs/5))
         self.nfft = self.subdiv_len
         self.noverlap = 0
+
+        # useful values
+        self.nsamples = len(self.raw)
+        self.ndivs = np.floor(self.nsamples / self.div_len)
+        self.nsubdivs = np.floor(self.div_len / (self.subdiv_len - self.noverlap))
 
         # time and frequency limits, used for displaying results
         self.tmin = 0
@@ -88,6 +100,9 @@ class LTSA():
         imresize(self.ltsa, resize)
 
         If resize is an int, the ltsa data is downsampled to a height of resize
+
+        It is often useful to manually adjust the color axis using
+        pyplot.clim(), as the default clim is usually wider than it should be
         '''
         if isinstance(resize, tuple):
             img = imresize(self.ltsa, resize)
@@ -121,11 +136,6 @@ class LTSA():
         plt.yticks(ytick_loc, ytick_lbl)
 
     def compute(self): 
-
-        # useful values
-        self.nsamples = len(self.raw)
-        self.ndivs = np.floor(self.nsamples / self.div_len)
-        self.nsubdivs = np.floor(self.div_len / (self.subdiv_len - self.noverlap))
 
         self.raw = self.raw[: self.ndivs * self.div_len]
         self.ltsa = np.zeros((self.nfft/2, self.ndivs), dtype=np.single)
