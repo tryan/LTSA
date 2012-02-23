@@ -64,7 +64,7 @@ class LTSA():
 
 #        print div_low, div_high, freq_low, freq_high
         
-    def show(self, nticks=8, resize=None):
+    def show(self, resize=None):
         if resize is not None:
             img = imresize(self.ltsa, resize)
         else:
