@@ -81,9 +81,10 @@ class LTSA():
         self.handle = plt.imshow(img, origin='lower')
         plt.xlabel('Time')
         plt.ylabel('Frequency')
-        xtick_loc = np.round(np.linspace(0, np.size(img,1)-1, nticks))
-        xlabel_vals = np.round(np.linspace(self.tmin, self.tmax, nticks))
-        xtick_lbl = [str(int(x)) for x in xlabel_vals]
+        xtick_loc, tmp = plt.xticks()
+        xtick_loc = filter(lambda(x): x >= 0 and x <= np.size(self.ltsa, 1), xtick_loc)
+        xlbl_vals = np.round(np.linspace(self.tmin, self.tmax, len(xtick_loc)))
+        xtick_lbl = [str(int(x)) for x in xlbl_vals]
         plt.xticks(xtick_loc, xtick_lbl)
 
     def compute(self): 
