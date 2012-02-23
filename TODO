@@ -1,11 +1,10 @@
-Process large files in pieces
+Matlab & Python:
 
-Enhanced viewing functionality for LTSA images
-    -Interpolation of low resolution images
-    -Color map scaling
-
+Process large files in pieces 
 Save images to hard disk
 
-(DONE) Add subdivision overlapping to spectrum ltsa_process_data()
+Python:
 
+Support for filetypes other than wav 
 
+Frequency axis labeling
