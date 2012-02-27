@@ -34,9 +34,9 @@ class LTSA():
         self.ltsa = None
 
         if isinstance(_file, str) and _file[-4:] == '.wav':
-            self.fs, self.raw = wavread(_file)
-            if self.raw.ndim > 1:
-                self.raw = self.raw[:,channel] # take only one channel
+            self.fs, self.signal = wavread(_file)
+            if self.signal.ndim > 1:
+                self.signal = self.signal[:,channel] # take only one channel
         else:
             raise InputError('Input must be a path to a .wav file')
 
@@ -47,7 +47,7 @@ class LTSA():
         self.noverlap = 0
 
         # useful values
-        self.nsamples = len(self.raw)
+        self.nsamples = len(self.signal)
         self.ndivs = np.floor(self.nsamples / self.div_len)
         self.nsubdivs = np.floor(self.div_len / (self.subdiv_len - self.noverlap))
 
@@ -156,9 +156,9 @@ class LTSA():
 
     def compute(self): 
 
-        self.raw = self.raw[: self.ndivs * self.div_len]
+        self.signal = self.signal[: self.ndivs * self.div_len]
         self.ltsa = np.zeros((self.nfft/2, self.ndivs), dtype=np.single)
-        divs = np.reshape(self.raw, (self.ndivs, self.div_len)).T
+        divs = np.reshape(self.signal, (self.ndivs, self.div_len)).T
 
         for i in xrange(int(self.ndivs)):
             div = divs[:,i]
