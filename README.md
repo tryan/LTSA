@@ -35,10 +35,10 @@ The recommended way to save an LTSA is to either save the raw `ltsa_process()` o
 
 ### Python version
 
-`ltsa.py` contains the LTSA class, which is instantiated with the name of the file to be processed and an optional channel argument for multichannel files. LTSA objects have attributes that control the computation and can be changed directly or by use of the set_params() method. 
+`ltsa.py` contains the `LTSA` class, which is instantiated with the name of the file to be processed and an optional channel argument for multichannel files. `LTSA` objects have attributes that control the computation and can be changed directly or by use of the `set_params()` method. 
 
-The compute() method runs the algorithm using the current parameters of the object and stores the resulting image in the ltsa attribute. 
+The `compute()` method runs the algorithm using the current parameters of the object and stores the resulting image in the ltsa attribute. 
 
-The crop() method crops the image to a specified time/frequency range. Data outside this range is thrown away by cropping. 
+The `crop()` method crops the image to a specified time/frequency range. Data outside this range is thrown away by cropping. 
 
-The show() method displays the image in the current figure using pyplot.imshow(). show() accepts optional arguments for resizing the image. Calling show() with an integer argument `n` will downsample the image vertically to `n` pixels of height. Calling show() with a tuple like `(h, w)` will use SciPy's `imresize()` to resize the image. 
+The `show()` method displays the image in the current figure using pyplot.imshow(). show() accepts optional arguments for resizing the image. Calling show() with an integer argument `n` will downsample the image vertically to `n` pixels of height. Calling show() with a tuple like `(h, w)` will use SciPy's `imresize()` to resize the image. 
