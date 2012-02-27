@@ -11,19 +11,37 @@ class InputError(Exception):
         self.detail = detail
 
 class LTSA():
+    '''
+    Long-Term Spectral Average
+
+    A class for computing spectral visualizations of long audio signals.
+
+    Accepts a path to a WAV file and an optional channel argument (default: 0).
+    Several class attributes allow the user to customize the computation (see
+    README) via set_params() or direct assignment. 
+
+    The computation is run with compute() and the resulting image is stored in
+    the ltsa attribute. The crop() method crops the image to a specified
+    time/frequency space. 
+
+    show() displays the LTSA in the current figure using pyplot.imshow() and
+    has optional resizing arguments.
+    '''
 
     # initialize with default parameters
     def __init__(self, _file, channel=0):
 
+        self.ltsa = None
+
         if isinstance(_file, str) and _file[-4:] == '.wav':
             self.fs, self.raw = wavread(_file)
-            if np.ndim(self.raw) > 1:
+            if self.raw.ndim > 1:
                 self.raw = self.raw[:,channel] # take only one channel
         else:
             raise InputError('Input must be a path to a .wav file')
 
         # defaults for user adjustable values
-        self.div_len = np.round(self.fs/2) # one second divisions
+        self.div_len = np.round(self.fs/2) # half second divisions
         self.subdiv_len = 2**np.round(np.log2(self.fs/5))
         self.nfft = self.subdiv_len
         self.noverlap = 0
@@ -105,9 +123,10 @@ class LTSA():
         pyplot.clim(), as the default clim is usually wider than it should be
         '''
         if isinstance(resize, tuple):
+# use scipy.misc.imresize
             img = imresize(self.ltsa, resize)
         elif isinstance(resize, int):
-#           downsample (without lowpass filtering)
+# downsample (without lowpass filtering)
             h = resize # img height in pixels
             idx = np.floor(np.linspace(0, np.size(self.ltsa, 0)-1, h))
             idx = np.int32(idx)
