@@ -35,7 +35,7 @@ The recommended way to save an LTSA is to either save the raw `ltsa_process()` o
 
 ### Python version
 
-`ltsa.py` contains the `LTSA` class, which is instantiated with the name of the file to be processed and an optional channel argument for multichannel files. `LTSA` objects have attributes that control the computation and can be changed directly or by use of the `set_params()` method. 
+`ltsa.py` contains the `WavLTSA` class, which is instantiated with the name of the file to be processed and an optional channel argument for multichannel files. `ltsa.py` also contains the `RawLTSA` class, whose constructor accepts a one dimensional numpy array of raw audio data as well as a sampling frequncy argument. `WavLTSA` and `RawLTSA` objects have attributes that control the computation and can be changed directly or by use of the `set_params()` method. 
 
 The `compute()` method runs the algorithm using the current parameters of the object and stores the resulting image in the `ltsa` attribute. 
 
