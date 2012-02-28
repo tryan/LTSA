@@ -12,50 +12,15 @@ class InputError(Exception):
 
 class LTSA():
     '''
-    Long-Term Spectral Average
+    Long-Term Spectral Average base class
 
-    A class for computing spectral visualizations of long audio signals.
+    Abstract -- do not instantiate
 
-    Accepts a path to a WAV file and an optional channel argument (default: 0).
-    Several class attributes allow the user to customize the computation (see
-    README) via set_params() or direct assignment. 
+    An algorithm for computing spectral visualizations of long audio signals.
 
-    The computation is run with compute() and the resulting image is stored in
-    the ltsa attribute. The crop() method crops the image to a specified
-    time/frequency space. 
-
-    show() displays the LTSA in the current figure using pyplot.imshow() and
-    has optional resizing arguments.
+    See WavLTSA, RawLTSA for concrete classes implementing the LTSA
     '''
 
-    # initialize with default parameters
-    def __init__(self, _file, channel=0):
-
-        self.ltsa = None
-
-        if isinstance(_file, str) and _file[-4:] == '.wav':
-            self.fs, self.signal = wavread(_file)
-            if self.signal.ndim > 1:
-                self.signal = self.signal[:,channel] # take only one channel
-        else:
-            raise InputError('Input must be a path to a .wav file')
-
-        # defaults for user adjustable values
-        self.div_len = np.round(self.fs/2) # half second divisions
-        self.subdiv_len = 2**np.round(np.log2(self.fs/5))
-        self.nfft = self.subdiv_len
-        self.noverlap = 0
-
-        # useful values
-        self.nsamples = len(self.signal)
-        self.ndivs = np.floor(self.nsamples / self.div_len)
-        self.nsubdivs = np.floor(self.div_len / (self.subdiv_len - self.noverlap))
-
-        # time and frequency limits, used for displaying results
-        self.tmin = 0
-        self.tmax = np.floor(self.nsamples / self.fs)
-        self.fmin = 0
-        self.fmax = np.floor(self.fs / 2)
 
 # takes a dict of attribute name/value pairs and sets LTSA params accordingly
     def set_params(self, var_dict):
@@ -107,6 +72,24 @@ class LTSA():
 
 #        print div_low, div_high, freq_low, freq_high
         
+    def init_params(self):
+        # defaults for user adjustable values
+        self.div_len = np.round(self.fs/2) # half second divisions
+        self.subdiv_len = 2**np.round(np.log2(self.fs/5))
+        self.nfft = self.subdiv_len
+        self.noverlap = 0
+
+        # useful values
+        self.nsamples = len(self.signal)
+        self.ndivs = np.floor(self.nsamples / self.div_len)
+        self.nsubdivs = np.floor(self.div_len / (self.subdiv_len - self.noverlap))
+
+        # time and frequency limits, used for displaying results
+        self.tmin = 0
+        self.tmax = np.floor(self.nsamples / self.fs)
+        self.fmin = 0
+        self.fmax = np.floor(self.fs / 2)
+
     def show(self, resize=None):
         '''
         Displays the LTSA image in the current axis using
@@ -177,3 +160,75 @@ class LTSA():
 
 
     def scale_to_uint8(self): pass
+    
+class WavLTSA(LTSA):
+    '''
+    Long-Term Spectral Average
+
+    A class for computing spectral visualizations of long audio signals.
+
+    Inputs:
+
+    *_file*
+    Path to a .wav file to be processed. The entire file will be read in at
+    once, so for files too large to fit in memory, split them up or handle them
+    piecewise with RawLTSA
+
+    *channel*
+    Selects one channel from the wav file to process, defaults to 0
+
+    The computation is run with compute() and the resulting image is stored in
+    the ltsa attribute. The crop() method crops the image to a specified
+    time/frequency space. 
+
+    show() displays the LTSA in the current figure using pyplot.imshow() and
+    has optional resizing arguments.
+    '''
+    # initialize with default parameters
+    def __init__(self, _file, channel=0):
+
+        self.ltsa = None
+
+        if isinstance(_file, str) and _file[-4:] == '.wav':
+            self.fs, self.signal = wavread(_file)
+            if self.signal.ndim > 1:
+                self.signal = self.signal[:,channel] # take only one channel
+        else:
+            raise InputError('Input must be a path to a .wav file')
+
+        self.init_params()
+
+
+    
+class RawLTSA(LTSA):
+    '''
+    Long-Term Spectral Average
+
+    A class for computing spectral visualizations of long audio signals.
+
+    Inputs:
+
+    *raw*
+    One-dimensional, real numpy array containing the raw audio data
+
+    *fs*
+    Sampling frequency in Hertz, defaults to 44100
+
+    The computation is run with compute() and the resulting image is stored in
+    the ltsa attribute. The crop() method crops the image to a specified
+    time/frequency space. 
+
+    show() displays the LTSA in the current figure using pyplot.imshow() and
+    has optional resizing arguments.
+    '''
+    # initialize with default parameters
+    def __init__(self, raw, fs=44100):
+        self.ltsa = None
+        if not isinstance(raw, np.ndarray) or raw.ndim != 1:
+            raise InputException('Input is not a one-dimensional numpy array')
+        else:
+            self.signal = raw
+            self.fs = fs
+
+        self.init_params()
+
