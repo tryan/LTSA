@@ -82,6 +82,7 @@ class LTSA():
 
         Cropping the LTSA throws away any data that is cropped out
         '''
+# workaround for not being able to use "self" in default arguments
         if tmax < 0:
             tmax = self.nsamples / self.fs
         if fmax < 0:
@@ -136,23 +137,10 @@ class LTSA():
         else:
             img = self.ltsa
 
-        self.handle = plt.imshow(img, origin='lower')
+        ext = (self.tmin, self.tmax, self.fmin, self.fmax)
+        self.handle = plt.imshow(img, origin='lower', extent=ext, aspect='auto')
         plt.xlabel('Time (seconds)')
         plt.ylabel('Frequency (Hertz)')
-
-# set time axis ticks & labels
-        xtick_loc, xtick_lbl = plt.xticks() # value of xtick_lbl will not be used
-        xtick_loc = xtick_loc[(xtick_loc >= 0) * (xtick_loc <= np.size(self.ltsa, 1))]
-        xlbl_vals = np.round(np.linspace(self.tmin, self.tmax, len(xtick_loc)))
-        xtick_lbl = [str(int(x)) for x in xlbl_vals]
-        plt.xticks(xtick_loc, xtick_lbl)
-
-# set frequency axis ticks & labels
-        ytick_loc, ytick_lbl = plt.yticks() # value of ytick_lbl will not be used
-        ytick_loc = ytick_loc[(ytick_loc >= 0) * (ytick_loc <= np.size(self.ltsa, 0))]
-        ylbl_vals = np.round(np.linspace(self.fmin, self.fmax, len(ytick_loc)))
-        ytick_lbl = [str(int(y)) for y in ylbl_vals]
-        plt.yticks(ytick_loc, ytick_lbl)
 
     def compute(self): 
 
