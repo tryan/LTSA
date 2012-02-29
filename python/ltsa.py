@@ -46,7 +46,8 @@ class LTSA():
 
         Cropping the LTSA throws away any data that is cropped out
 
-        Cropping an LTSA more than once may be problematic
+        Cropping an LTSA more than once may be problematic. Zooming in on the
+        displayed image is generally preferable to cropping.
         '''
 # workaround for not being able to use "self" in default arguments
         if tmax is None or tmax > self.tmax:
@@ -79,7 +80,12 @@ class LTSA():
         self.ltsa = self.ltsa[freq_low:freq_high, :]
 
         
-    def init_params(self):
+    def _init_params(self):
+    '''
+    Initialize some useful class attributes
+
+    For use in constructors
+    '''
         # defaults for user adjustable values
         self.div_len = np.round(self.fs/2) # half second divisions
         self.subdiv_len = 2**np.round(np.log2(self.fs/5))
@@ -203,7 +209,7 @@ class WavLTSA(LTSA):
         else:
             raise InputError('Input must be a path to a .wav file')
 
-        self.init_params()
+        self._init_params()
 
 
     
@@ -237,5 +243,5 @@ class RawLTSA(LTSA):
             self.signal = raw
             self.fs = fs
 
-        self.init_params()
+        self._init_params()
 
