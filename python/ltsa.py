@@ -21,7 +21,6 @@ class LTSA():
     See WavLTSA, RawLTSA for concrete classes implementing the LTSA
     '''
 
-
 # takes a dict of attribute name/value pairs and sets LTSA params accordingly
     def set_params(self, var_dict):
         '''
@@ -39,19 +38,27 @@ class LTSA():
         for key, val in var_dict.iteritems():
             vars(self)[key] = val
 
-    def crop(self, tmin = 0, tmax = -1, fmin = 0, fmax = -1):
+    def crop(self, tmin = 0, tmax = None, fmin = 0, fmax = None):
         '''
         Crop the computed LTSA in time and/or frequency
 
         Input times should be given in seconds, frequencies in Hertz
 
         Cropping the LTSA throws away any data that is cropped out
+
+        Cropping an LTSA more than once may be problematic
         '''
 # workaround for not being able to use "self" in default arguments
-        if tmax < 0:
-            tmax = self.nsamples / self.fs
-        if fmax < 0:
-            fmax = self.fs / 2
+        if tmax is None or tmax > self.tmax:
+            tmax = self.tmax
+        if fmax is None or fmax > self.fmax:
+            fmax = self.fmax
+
+# check for input sanity
+        if tmin < self.tmin or tmax <= tmin or tmax < 0:
+            raise InputError('tmin or tmax out of range')
+        if fmin < self.fmin or fmax <= fmin or fmax < 0:
+            raise InputError('fmin or fmax out of range')
 
 # update time and frequency limits
         self.tmin = tmin
@@ -60,17 +67,17 @@ class LTSA():
         self.fmax = fmax
 
         # crop time axis
-        div_low = np.max([0, np.floor(tmin * self.fs / self.div_len)])
-        div_high = np.ceil(tmax * self.fs / self.div_len)
-        self.ltsa = self.ltsa[:,div_low:div_high]
+        divs_per_second = self.fs / self.div_len
+        div_low = np.floor(tmin * divs_per_second)
+        div_high = np.ceil(tmax * divs_per_second)
+        self.ltsa = self.ltsa[:, div_low:div_high]
 
         # crop frequency axis
-        freq_low = np.max([0, fmin / (self.fs/2) * np.size(self.ltsa, 0)])
-        freq_low = np.floor(freq_low)
-        freq_high = np.ceil(fmax / (self.fs/2) * np.size(self.ltsa, 0))
-        self.ltsa = self.ltsa[freq_low:freq_high,:]
+        pixels_per_hz = self.ltsa.shape[0] / (self.fs/2)
+        freq_low = np.floor(fmin * pixels_per_hz)
+        freq_high = np.ceil(fmax * pixels_per_hz)
+        self.ltsa = self.ltsa[freq_low:freq_high, :]
 
-#        print div_low, div_high, freq_low, freq_high
         
     def init_params(self):
         # defaults for user adjustable values
@@ -80,7 +87,7 @@ class LTSA():
         self.noverlap = 0
 
         # useful values
-        self.nsamples = len(self.signal)
+        self.nsamples = self.signal.size
         self.ndivs = np.floor(self.nsamples / self.div_len)
         self.nsubdivs = np.floor(self.div_len / (self.subdiv_len - self.noverlap))
 
