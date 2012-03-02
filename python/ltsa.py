@@ -89,7 +89,7 @@ class LTSA():
         # defaults for user adjustable values
         self.div_len = np.round(self.fs/2) # half second divisions
         self.subdiv_len = 2**np.round(np.log2(self.fs/5))
-        self.nfft = self.subdiv_len
+        self.nfft = None
         self.noverlap = 0
 
         # useful values
@@ -140,6 +140,8 @@ class LTSA():
 
     def compute(self): 
 
+        if self.nfft is None:
+            self.nfft = self.subdiv_len
         self.signal = self.signal[: self.ndivs * self.div_len]
         self.ltsa = np.zeros((self.nfft/2, self.ndivs), dtype=np.single)
         divs = np.reshape(self.signal, (self.ndivs, self.div_len)).T
