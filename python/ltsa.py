@@ -70,22 +70,24 @@ class LTSA():
         # crop time axis
         divs_per_second = self.fs / self.div_len
         div_low = np.floor(tmin * divs_per_second)
-        div_high = np.ceil(tmax * divs_per_second)
+        div_high = np.ceil(tmax * divs_per_second) + 1
         self.ltsa = self.ltsa[:, div_low:div_high]
 
         # crop frequency axis
         pixels_per_hz = self.ltsa.shape[0] / (self.fs/2)
         freq_low = np.floor(fmin * pixels_per_hz)
-        freq_high = np.ceil(fmax * pixels_per_hz)
+        freq_high = np.ceil(fmax * pixels_per_hz) + 1
         self.ltsa = self.ltsa[freq_low:freq_high, :]
+
+        return div_low, div_high, freq_low, freq_high
 
         
     def _init_params(self):
-    '''
-    Initialize some useful class attributes
+        '''
+        Initialize some useful class attributes
 
-    For use in constructors
-    '''
+        For use in constructors
+        '''
         # defaults for user adjustable values
         self.div_len = np.round(self.fs/2) # half second divisions
         self.subdiv_len = 2**np.round(np.log2(self.fs/5))
