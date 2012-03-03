@@ -121,17 +121,25 @@ class LTSA():
         It is often useful to manually adjust the color axis using
         pyplot.clim(), as the default clim is usually wider than it should be
         '''
-        if isinstance(resize, tuple):
-# use scipy.misc.imresize
-            img = imresize(self.ltsa, resize)
+        if isinstance(resize, tuple) and len(resize) == 2:
+            # use scipy.misc.imresize
+            try:
+                img = imresize(self.ltsa, resize)
+            except:
+                print 'Exception in imresize(), skipping resize'
+                img = self.ltsa
         elif isinstance(resize, int):
-# downsample (without lowpass filtering)
-            h = resize # img height in pixels
-            idx = np.floor(np.linspace(0, np.size(self.ltsa, 0)-1, h))
-            idx = np.int32(idx)
-            img = np.zeros((h, np.size(self.ltsa, 1)))
-            for i in xrange(int(np.size(self.ltsa, 1))):
-                img[:,i] = self.ltsa[idx,i] 
+            # downsample (without lowpass filtering)
+            if resize < 1 or resize > self.ltsa.shape[0]:
+                print 'Resize argument out of range, not resizing'
+                img = self.ltsa
+            else:
+                h = resize # img height in pixels
+                idx = np.floor(np.linspace(0, np.size(self.ltsa, 0)-1, h))
+                idx = np.int32(idx)
+                img = np.zeros((h, np.size(self.ltsa, 1)))
+                for i in xrange(int(np.size(self.ltsa, 1))):
+                    img[:,i] = self.ltsa[idx,i] 
         else:
             img = self.ltsa
 
@@ -139,6 +147,8 @@ class LTSA():
         self.handle = plt.imshow(img, origin='lower', extent=ext, aspect='auto')
         plt.xlabel('Time (seconds)')
         plt.ylabel('Frequency (Hertz)')
+
+        return img
 
     def compute(self): 
 
