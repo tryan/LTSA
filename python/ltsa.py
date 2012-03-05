@@ -5,17 +5,13 @@ from scipy.io.wavfile import read as wavread
 import matplotlib.pyplot as plt
 from scipy.misc import imresize
 
-class InputError(Exception):
-    
-    def __init__(self, detail):
-        self.detail = detail
-
 class LTSA():
     '''
     Long-Term Spectral Average base class
 
     Abstract -- do not instantiate. Subclasses should implement a constructor
-    at minimum.
+    at minimum. Constructors of derived classes are responsible for getting the
+    raw audio data into self.raw
 
     An algorithm for computing spectral visualizations of long audio signals.
 
@@ -119,18 +115,30 @@ class LTSA():
     def show(self, resize=None, interp='bilinear'):
         '''
         Displays the LTSA image in the current axis using
-        matplotlib.pyplot.imshow()
+        matplotlib.pyplot.imshow(). It is often useful to manually adjust the
+        color axis using pyplot.clim(), as the default clim is usually wider
+        than it should be
 
-        If no resize input is given, the self.ltsa is displayed without
-        modification
+        *resize*
+        This argument controls what image resizing will be applied to the ltsa
+        array before it is displayed. There are several possible types that can
+        be passed as resize depending on the desired behavior:
+            
+            None
+            No resizing action is taken
 
-        If resize is a tuple of two ints, scipy.misc.imresize is called:
-        imresize(self.ltsa, resize)
+            (int, int)
+            scipy.misc.imresize is called -> imresize(self.ltsa, resize, interp)
 
-        If resize is an int, the ltsa data is downsampled to a height of resize
+            int
+            The frequency axis is downsampled such that it's length is resize.
+            Currently this uses no lowpass filtering or interpolation so the
+            results may show some jaggedness but it is not typically a problem
 
-        It is often useful to manually adjust the color axis using
-        pyplot.clim(), as the default clim is usually wider than it should be
+        *interp*
+        Only used when imresize is called. Determines the type of interpolation
+        used in resizing. See the scipy.misc.imresize function for more
+        information.
         '''
         if isinstance(resize, tuple) and len(resize) == 2:
             # use scipy.misc.imresize
@@ -169,6 +177,16 @@ class LTSA():
         self.compute()
 
     def compute(self): 
+        '''
+        This method executes the LTSA algorithm. The result is a grayscale
+        image (2D numpy array) which is assigned to the self.ltsa attribute. 
+
+        All the data that this method needs is provided ahead of time by the
+        constructor and/or the set_params method.
+
+        A syntactic shortcut for calling this method is to simply call the LTSA
+        object with no arguments.
+        '''
 
         if self.nfft is None:
             self.nfft = self.subdiv_len
@@ -181,6 +199,10 @@ class LTSA():
             self.ltsa[:,i] = self._calc_spectrum(div)
 
     def _calc_spectrum(self, div):
+        '''
+        This function is used by compute() to determine the approximate
+        frequency content of one division of audio data. 
+        '''
         spectrum = np.zeros((self.nfft/2,))
         window = np.hanning(self.subdiv_len)
         slip = self.subdiv_len - self.noverlap
@@ -199,10 +221,6 @@ class LTSA():
 
         spectrum = np.single(np.log(spectrum / self.nsubdivs))
         return spectrum
-
-    def _tighten_color_axis(self, vmin, vmax):
-        spread = vmin - vmax
-
 
     def scale_to_uint8(self): pass
     
