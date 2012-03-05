@@ -222,7 +222,15 @@ class LTSA():
         spectrum = np.single(np.log(spectrum / self.nsubdivs))
         return spectrum
 
-    def scale_to_uint8(self): pass
+    def scale_to_uint8(self): 
+        '''
+        Rescales self.ltsa to fit into unsigned 8 bit integers and converts the
+        data type of self.ltsa to np.uint8
+        '''
+        self.ltsa -= self.ltsa.min()
+        self.ltsa *= 255 / self.ltsa.max()
+        self.ltsa = np.uint8(self.ltsa)
+
     
 class WavLTSA(LTSA):
     '''
