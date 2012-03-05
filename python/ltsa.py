@@ -162,6 +162,9 @@ class LTSA():
 
         return img
 
+    def __call__(self):
+        self.compute()
+
     def compute(self): 
 
         if self.nfft is None:
