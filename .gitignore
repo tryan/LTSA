@@ -6,3 +6,4 @@ octave-core
 *.mp3
 *.wav
 mp3read.m
+*.pyc
