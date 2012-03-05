@@ -116,7 +116,7 @@ class LTSA():
         self.fmin = 0
         self.fmax = np.floor(self.fs / 2)
 
-    def show(self, resize=None):
+    def show(self, resize=None, interp='bilinear'):
         '''
         Displays the LTSA image in the current axis using
         matplotlib.pyplot.imshow()
@@ -134,26 +134,27 @@ class LTSA():
         '''
         if isinstance(resize, tuple) and len(resize) == 2:
             # use scipy.misc.imresize
-            try:
-                img = imresize(self.ltsa, resize)
-            except:
-                print 'Exception in imresize(), skipping resize'
-                img = self.ltsa
+            img = imresize(self.ltsa, resize, interp)
+
         elif isinstance(resize, int):
             # downsample (without lowpass filtering)
             if resize < 1 or resize > self.ltsa.shape[0]:
-                print 'Resize argument out of range, not resizing'
-                img = self.ltsa
-            else:
-                h = resize # img height in pixels
-                idx = np.floor(np.linspace(0, np.size(self.ltsa, 0)-1, h))
-                idx = np.int32(idx)
-                img = np.zeros((h, np.size(self.ltsa, 1)))
-                for i in xrange(int(np.size(self.ltsa, 1))):
-                    img[:,i] = self.ltsa[idx,i] 
-        else:
+                raise ValueError('resize argument out of range')
+
+            h = resize # img height in pixels
+            idx = np.floor(np.linspace(0, np.size(self.ltsa, 0)-1, h))
+            idx = np.int32(idx)
+            img = np.zeros((h, np.size(self.ltsa, 1)))
+            for i in xrange(int(np.size(self.ltsa, 1))):
+                img[:,i] = self.ltsa[idx,i] 
+
+        elif resize is None:
             img = self.ltsa
 
+        else:
+            raise TypeError('resize argument not of acceptable type')
+
+        # set correct labels on image
         ext = (self.tmin, self.tmax, self.fmin, self.fmax)
         self.handle = plt.imshow(img, origin='lower', extent=ext, aspect='auto')
         plt.xlabel('Time (seconds)')
