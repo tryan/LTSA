@@ -163,6 +163,9 @@ class LTSA():
         return img
 
     def __call__(self):
+        '''
+        Calling an LTSA instance directly is identical to calling compute()
+        '''
         self.compute()
 
     def compute(self): 
