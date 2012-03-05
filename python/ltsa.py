@@ -14,7 +14,8 @@ class LTSA():
     '''
     Long-Term Spectral Average base class
 
-    Abstract -- do not instantiate
+    Abstract -- do not instantiate. Subclasses should implement a constructor
+    at minimum.
 
     An algorithm for computing spectral visualizations of long audio signals.
 
@@ -32,36 +33,46 @@ class LTSA():
             nfft
             noverlap
 
-        Input should be a dictionary, for example:
+        Example input:
         var_dict = {'div_len':8192, 'subdiv_len':1024}
+        
+        *var_dict*
+        Dictionary containing names and values of parameters to set
+
         '''
         for key, val in var_dict.iteritems():
             vars(self)[key] = val
 
-    def crop(self, tmin = 0, tmax = None, fmin = 0, fmax = None):
+    def crop(self, tmin=0, tmax=None, fmin=0, fmax=None):
         '''
-        Crop the computed LTSA in time and/or frequency
+        Crop the computed LTSA in time and/or frequency. Anything that is
+        cropped out is thrown away and will need to be recomputed if needed.
 
-        Input times should be given in seconds, frequencies in Hertz
+        *tmin*
+        beginning of time region which will not be cropped out
 
-        Cropping the LTSA throws away any data that is cropped out
+        *tmax*
+        end of time region which will not be cropped out
 
-        Cropping an LTSA more than once may be problematic. Zooming in on the
-        displayed image is generally preferable to cropping.
+        *fmin*
+        lower range of frequencies which will not be cropped out
+
+        *fmax*
+        upper range of frequencies which will not be cropped out
         '''
-# workaround for not being able to use "self" in default arguments
+        # workaround for not being able to use "self" in default arguments
         if tmax is None or tmax > self.tmax:
             tmax = self.tmax
         if fmax is None or fmax > self.fmax:
             fmax = self.fmax
 
-# check for input sanity
+        # check for input sanity
         if tmin < self.tmin or tmax <= tmin or tmax < 0:
             raise InputError('tmin or tmax out of range')
         if fmin < self.fmin or fmax <= fmin or fmax < 0:
             raise InputError('fmin or fmax out of range')
 
-# update time and frequency limits
+        # update time and frequency limits
         self.tmin = tmin
         self.tmax = tmax
         self.fmin = fmin
@@ -84,7 +95,7 @@ class LTSA():
         
     def _init_params(self):
         '''
-        Initialize some useful class attributes
+        Initialize some useful class attributes to default values
 
         For use in constructors
         '''
