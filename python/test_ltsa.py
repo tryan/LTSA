@@ -5,9 +5,14 @@ from ltsa import *
 
 class TestLTSA(ut.TestCase):
 
-    def setUp(self):
+    def set_gram(self):
         self.gram = WavLTSA('/home/ryan/trains.wav')
         self.gram.compute()
+
+    def test_scale_to_uint8(self):
+        self.set_gram()
+        self.gram.scale_to_uint8()
+        self.assertTrue(self.gram.ltsa.dtype == 'uint8')
 
     def test_callable(self):
         # test that __call__ and compute do the same thing
@@ -15,11 +20,11 @@ class TestLTSA(ut.TestCase):
         gram2 = WavLTSA('/home/ryan/trains.wav')
         gram1()
         gram2.compute()
-        self.assertTrue((gram1.ltsa == gram2.ltsa).all() and gram1.ltsa is not None)
+        self.assertTrue(gram1.ltsa is not None and (gram1.ltsa == gram2.ltsa).all())
 
     def test_show(self):
         # setup the tests
-        self.setUp()
+        self.set_gram()
 
         # test that with no args, self.gram.ltsa is shown
         img = self.gram.show()
@@ -48,7 +53,7 @@ class TestLTSA(ut.TestCase):
 
     
     def test_crop(self):
-        self.setUp()
+        self.set_gram()
 
         # in this test case we want to crop the middle half of both the time
         # and frequency ranges
