@@ -9,6 +9,14 @@ class TestLTSA(ut.TestCase):
         self.gram = WavLTSA('/home/ryan/trains.wav')
         self.gram.compute()
 
+    def test_callable(self):
+        # test that __call__ and compute do the same thing
+        gram1 = WavLTSA('/home/ryan/trains.wav')
+        gram2 = WavLTSA('/home/ryan/trains.wav')
+        gram1()
+        gram2.compute()
+        self.assertTrue((gram1.ltsa == gram2.ltsa).all() and gram1.ltsa is not None)
+
     def test_show(self):
         # setup the tests
         self.setUp()
