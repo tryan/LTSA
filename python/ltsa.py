@@ -4,6 +4,7 @@ from numpy.fft import rfft
 from scipy.io.wavfile import read as wavread
 import matplotlib.pyplot as plt
 from scipy.misc import imresize
+from numbers import Number
 
 class LTSA():
     '''
@@ -57,16 +58,22 @@ class LTSA():
         upper range of frequencies which will not be cropped out
         '''
         # workaround for not being able to use "self" in default arguments
-        if tmax is None or tmax > self.tmax:
+        if tmax is None:
             tmax = self.tmax
-        if fmax is None or fmax > self.fmax:
+        if fmax is None:
             fmax = self.fmax
+
+        # check inputs are all real numbers
+        inputs = [tmin, tmax, fmin, fmax]
+        for val in inputs:
+            if not np.isreal(val) or not isinstance(val, Number):
+                raise TypeError('all inputs must be real numbers')
 
         # check for input sanity
         if tmin < self.tmin or tmax <= tmin or tmax < 0:
-            raise InputError('tmin or tmax out of range')
+            raise ValueError('tmin and/or tmax out of range')
         if fmin < self.fmin or fmax <= fmin or fmax < 0:
-            raise InputError('fmin or fmax out of range')
+            raise ValueError('fmin and/or fmax out of range')
 
         # update time and frequency limits
         self.tmin = tmin

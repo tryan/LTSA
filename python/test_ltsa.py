@@ -82,15 +82,34 @@ class TestLTSA(ut.TestCase):
 
         self.assertEqual(crop_results, expected_results)
 
+        #####
+
+        # check that malformed inputs throw errors
+
+        self.set_gram()
+
+        value_err_cases = [lambda: self.gram.crop(50, 30),
+                           lambda: self.gram.crop(-1, 30),
+                           lambda: self.gram.crop(tmax = -30),
+                           lambda: self.gram.crop(fmax = -1),
+                           lambda: self.gram.crop(fmin = 500, fmax = 300)]
+        
+        type_err_cases = [lambda: self.gram.crop('fred'),
+                          lambda: self.gram.crop(1+1j),
+                          lambda: self.gram.crop(lambda: 3)]
+
+        for test_case in value_err_cases:
+            self.assertRaises(ValueError, test_case)
+
+        for test_case in type_err_cases:
+            self.assertRaises(TypeError, test_case)
+
+
 def suite():
     suite = ut.TestSuite()
     suite.addTest(ut.makeSuite(TestLTSA))
     return suite
 
-'''
-if __name__ == '__main__':
-    ut.main()
-'''
 
 #suite = ut.TestLoader().loadTestsFromTestCase(TestLTSA)
 ut.TextTestRunner(verbosity=2).run(suite())
