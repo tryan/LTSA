@@ -14,13 +14,16 @@ class TestLTSA(ut.TestCase):
         self.gram.scale_to_uint8()
         self.assertTrue(self.gram.ltsa.dtype == 'uint8')
 
-    def test_callable(self):
+    def test_magic_methods(self):
         # test that __call__ and compute do the same thing
         gram1 = WavLTSA('/home/ryan/trains.wav')
         gram2 = WavLTSA('/home/ryan/trains.wav')
         gram1()
         gram2.compute()
-        self.assertTrue(gram1.ltsa is not None and (gram1.ltsa == gram2.ltsa).all())
+        self.assertTrue(gram1.ltsa is not None and gram1 == gram2)
+
+        # check setitem and getitem
+
 
     def test_show(self):
         # setup the tests
@@ -38,18 +41,23 @@ class TestLTSA(ut.TestCase):
         self.assertEqual(img.shape, (600, t_size))
 
         # nonsensical types passed as resize should raise TypeError
-        self.assertRaises(TypeError, lambda: self.gram.show('Fred'))
-        self.assertRaises(TypeError, lambda: self.gram.show((800, 800, 5)))
-        self.assertRaises(TypeError, lambda: self.gram.show((800.5, 800)))
-        self.assertRaises(TypeError, lambda: self.gram.show(800.5))
-        self.assertRaises(TypeError, lambda: self.gram.show(lambda: 800))
-        self.assertRaises(ValueError, lambda: self.gram.show(-1))
-        self.assertRaises(ValueError, lambda: self.gram.show(1000**2))
+        type_err_cases = ['Fred',
+                          (800, 800, 5),
+                          (800.5, 800),
+                          lambda: 800]
+
+        value_err_cases = [-1, 1000**2]
+
+        for case in type_err_cases:
+            self.assertRaises(TypeError, self.gram.show, case)
+
+        for case in value_err_cases:
+            self.assertRaises(ValueError, self.gram.show, case)
 
         # imresize should raise an error on bad interp values
-        self.assertRaises(KeyError, lambda: self.gram.show((800, 800), 'failme'))
-        self.assertRaises(KeyError, lambda: self.gram.show((800, 800), 13))
-        self.assertRaises(KeyError, lambda: self.gram.show((800, 800), lambda: 'bilinear'))
+        interp_err_cases = ['failme', 13, lambda: bilinear]
+        for case in interp_err_cases:
+            self.assertRaises(KeyError, self.gram.show, (800,800), case)
 
     
     def test_crop(self):
