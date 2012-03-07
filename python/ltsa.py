@@ -240,12 +240,16 @@ class LTSA():
         self.ltsa = np.uint8(self.ltsa)
 
     def __getitem__(self, key):
-        idx0, idx1 = key
-        return self.ltsa[idx0, idx1]
+        '''
+        Provides access to the elements of self.ltsa
+        '''
+        return self.ltsa[key]
 
     def __setitem__(self, key, value):
-        idx0, idx1 = key
-        self.ltsa[idx0, idx1] = value
+        '''
+        Allows easy setting of the elements of self.ltsa
+        '''
+        self.ltsa[key] = value
 
     def __eq__(self, other):
         '''
