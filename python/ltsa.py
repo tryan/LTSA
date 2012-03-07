@@ -238,6 +238,30 @@ class LTSA():
         self.ltsa *= 255 / self.ltsa.max()
         self.ltsa = np.uint8(self.ltsa)
 
+    def __getitem__(self, key):
+        idx0, idx1 = key
+        return self.ltsa[idx0, idx1]
+
+    def __setitem__(self, key, value):
+        idx0, idx1 = key
+        self.ltsa[idx0, idx1] = value
+
+    def __eq__(self, other):
+        '''
+        Equality is tested by checking the computed self.ltsa arrays. All
+        elements of self.ltsa must equal the corresponding element in
+        other.ltsa for equality.  
+        '''
+        try:
+            return (self.ltsa == other.ltsa).all()
+        except:
+            return False
+
+    def __ne__(self, other):
+        '''
+        Returns the opposite of __eq__
+        '''
+        return not self.__eq__(self, other)
     
 class WavLTSA(LTSA):
     '''
