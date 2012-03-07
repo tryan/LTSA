@@ -198,6 +198,7 @@ class LTSA():
         if self.nfft is None:
             self.nfft = self.subdiv_len
         self.signal = self.signal[: self.ndivs * self.div_len]
+        self.tmax = len(self.signal) / self.fs
         self.ltsa = np.zeros((self.nfft/2, self.ndivs), dtype=np.single)
         divs = np.reshape(self.signal, (self.ndivs, self.div_len)).T
 
