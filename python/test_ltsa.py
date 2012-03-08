@@ -13,10 +13,16 @@ class TestLTSA(ut.TestCase):
         '''
         self.gram = None
 
+    def test_sanity(self):
+        # some general sanity checks
+        gram = self.set_gram()
+        
+        self.assertEqual(gram.ndivs, gram.ltsa.shape[1])
+
     def test_scale_to_uint8(self):
-        self.set_gram()
-        self.gram.scale_to_uint8()
-        self.assertTrue(self.gram.ltsa.dtype == 'uint8')
+        gram = self.set_gram()
+        gram.scale_to_uint8()
+        self.assertTrue(gram.ltsa.dtype == 'uint8')
 
     def test_magic_methods(self):
         # check setitem and getitem
@@ -80,32 +86,32 @@ class TestLTSA(ut.TestCase):
 
     
     def test_crop(self):
-        self.set_gram()
+        gram = self.set_gram()
 
         # in this test case we want to crop the middle half of both the time
         # and frequency ranges
 
-        fs = self.gram.fs
-        ndivs = self.gram.ndivs
-        div_len = self.gram.div_len
-        divs_per_second = fs / div_len
-        pixels_per_hz = self.gram.ltsa.shape[0] / (fs/2)
+        fs = gram.fs
+        ndivs = gram.ndivs
+        self.assertEqual(ndivs, gram.ltsa.shape[1])
+        div_len = gram.div_len
 
-        tmax = self.gram.tmax
+        tmax = gram.tmax
         tmax_new = int(tmax * 3.0/4.0)
         tmin_new = int(tmax * 1.0/4.0)
 
-        fmax = self.gram.fmax
+        fmax = gram.fmax
         fmax_new = int(fmax * 3.0/4.0)
         fmin_new = int(fmax * 1.0/4.0)
 
-        div_low = np.floor(tmin_new * divs_per_second)
-        div_high = np.floor(tmax_new * divs_per_second) + 1
-        freq_low = np.floor(fmin_new * pixels_per_hz)
-        freq_high = np.ceil(fmax_new * pixels_per_hz) + 1
+        shape = gram.ltsa.shape
+        div_low = np.floor(shape[1] * 1.0/4.0)
+        div_high = np.ceil(shape[1] * 3.0/4.0) + 1
+        freq_low = np.floor(shape[0] * 1.0/4.0) - 1
+        freq_high = np.ceil(shape[0] * 3.0/4.0) + 1
         expected_results = (div_low, div_high, freq_low, freq_high)
 
-        crop_results = self.gram.crop(tmin_new, tmax_new, fmin_new, fmax_new)
+        crop_results = gram.crop(tmin_new, tmax_new, fmin_new, fmax_new)
 
         self.assertEqual(crop_results, expected_results)
 
@@ -113,7 +119,7 @@ class TestLTSA(ut.TestCase):
 
         # check that malformed inputs throw errors
 
-        self.set_gram()
+        gram = self.set_gram()
 
         value_err_cases = [(50, 30),
                            (-1, 30),
@@ -125,14 +131,18 @@ class TestLTSA(ut.TestCase):
                           1+1j,
                           lambda: 3]
 
-        for test_case in value_err_cases:
-            self.assertRaises(ValueError, self.gram.crop, test_case)
+        for case in value_err_cases:
+            self.assertRaises(ValueError, gram.crop, case)
 
-        for test_case in type_err_cases:
-            self.assertRaises(TypeError, self.gram.crop, test_case)
+        for case in type_err_cases:
+            self.assertRaises(TypeError, gram.crop, case)
 
 class TestWavLTSA(TestLTSA):
-    
+    '''
+    Class for testing the WavLTSA class. The LTSA class tests are independent
+    of the origin of the raw signal data, so the only difference in testing is
+    in the initialization
+    '''
     def set_gram(self):
         '''
         Create a WavLTSA for testing. 
@@ -143,7 +153,11 @@ class TestWavLTSA(TestLTSA):
         return self.gram
 
 class TestRawLTSA(TestLTSA):
-    
+    '''
+    Class for testing the RawLTSA class. The LTSA class tests are independent
+    of the origin of the raw signal data, so the only difference in testing is
+    in the initialization
+    '''
     def set_gram(self):
         '''
         Generate some raw data for testing. 
