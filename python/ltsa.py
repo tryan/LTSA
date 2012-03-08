@@ -301,7 +301,7 @@ class WavLTSA(LTSA):
             if self.signal.ndim > 1:
                 self.signal = self.signal[:,channel] # take only one channel
         else:
-            raise InputError('Input must be a path to a .wav file')
+            raise TypeError('Input must be a path to a .wav file')
 
         self._init_params()
 
@@ -332,7 +332,7 @@ class RawLTSA(LTSA):
     def __init__(self, raw, fs=44100):
         self.ltsa = None
         if not isinstance(raw, np.ndarray) or raw.ndim != 1:
-            raise InputException('Input is not a one-dimensional numpy array')
+            raise TypeError('Input is not a one-dimensional numpy array')
         else:
             self.signal = raw
             self.fs = fs
