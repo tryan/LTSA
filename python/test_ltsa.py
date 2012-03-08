@@ -8,6 +8,7 @@ class TestLTSA(ut.TestCase):
     def set_gram(self):
         self.gram = WavLTSA('/home/ryan/trains.wav')
         self.gram.compute()
+        return self.gram
 
     def test_scale_to_uint8(self):
         self.set_gram()
@@ -15,15 +16,29 @@ class TestLTSA(ut.TestCase):
         self.assertTrue(self.gram.ltsa.dtype == 'uint8')
 
     def test_magic_methods(self):
-        # test that __call__ and compute do the same thing
-        gram1 = WavLTSA('/home/ryan/trains.wav')
-        gram2 = WavLTSA('/home/ryan/trains.wav')
-        gram1()
-        gram2.compute()
-        self.assertTrue(gram1.ltsa is not None and gram1 == gram2)
-
         # check setitem and getitem
+        gram = self.set_gram()
 
+        # these shouldn't raise errors
+        tmp = gram[0,0]
+        tmp = gram[:,1]
+        tmp = gram[-1,-1]
+        gram[0,0] = 13.34123
+
+#       these are invalid access keys and should raise an error
+        key_err_cases = [(1, 2, 3),
+                         'invalid_index']
+
+        for case in key_err_cases:
+            self.assertRaises(Exception, gram.__getitem__, case)
+
+        # these values should raise an error if assigned to gram[0,0]
+        set_err_cases = ['invalid_value',
+                         (3, 2),
+                         lambda x: x + 1]
+
+        for case in set_err_cases:
+            self.assertRaises(Exception, gram.__setitem__, (0,0), case)
 
     def test_show(self):
         # setup the tests
@@ -44,7 +59,8 @@ class TestLTSA(ut.TestCase):
         type_err_cases = ['Fred',
                           (800, 800, 5),
                           (800.5, 800),
-                          lambda: 800]
+                          lambda: 800,
+                          300.5]
 
         value_err_cases = [-1, 1000**2]
 
