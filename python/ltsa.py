@@ -44,6 +44,8 @@ class LTSA():
         '''
         Crop the computed LTSA in time and/or frequency. Anything that is
         cropped out is thrown away and will need to be recomputed if needed.
+        This method returns the indices that were computed and used for
+        cropping for testing purposes
 
         *tmin*
         beginning of time region which will not be cropped out
@@ -256,6 +258,9 @@ class LTSA():
         Equality is tested by checking the computed self.ltsa arrays. All
         elements of self.ltsa must equal the corresponding element in
         other.ltsa for equality.  
+
+        Equality testing will return False unless it can verify that 
+        self.ltsa == other.ltsa 
         '''
         try:
             return (self.ltsa == other.ltsa).all()
@@ -284,9 +289,9 @@ class WavLTSA(LTSA):
     *channel*
     Selects one channel from the wav file to process, defaults to 0
 
-    The computation is run with compute() and the resulting image is stored in
-    the ltsa attribute. The crop() method crops the image to a specified
-    time/frequency space. 
+    The computation is run with compute() or __call__ and the resulting image
+    is stored in the ltsa attribute. The crop() method crops the image to a
+    specified time/frequency space. 
 
     show() displays the LTSA in the current figure using pyplot.imshow() and
     has optional resizing arguments.
@@ -321,9 +326,9 @@ class RawLTSA(LTSA):
     *fs*
     Sampling frequency in Hertz, defaults to 44100
 
-    The computation is run with compute() and the resulting image is stored in
-    the ltsa attribute. The crop() method crops the image to a specified
-    time/frequency space. 
+    The computation is run with compute() or __call__ and the resulting image
+    is stored in the ltsa attribute. The crop() method crops the image to a
+    specified time/frequency space. 
 
     show() displays the LTSA in the current figure using pyplot.imshow() and
     has optional resizing arguments.
