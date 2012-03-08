@@ -115,25 +115,28 @@ class TestLTSA(ut.TestCase):
 
         self.set_gram()
 
-        value_err_cases = [lambda: self.gram.crop(50, 30),
-                           lambda: self.gram.crop(-1, 30),
-                           lambda: self.gram.crop(tmax = -30),
-                           lambda: self.gram.crop(fmax = -1),
-                           lambda: self.gram.crop(fmin = 500, fmax = 300)]
+        value_err_cases = [(50, 30),
+                           (-1, 30),
+                           (0, -30),
+                           (0, 1000, -1),
+                           (0, 1000, 500, 300)]
         
-        type_err_cases = [lambda: self.gram.crop('fred'),
-                          lambda: self.gram.crop(1+1j),
-                          lambda: self.gram.crop(lambda: 3)]
+        type_err_cases = ['fred',
+                          1+1j,
+                          lambda: 3]
 
         for test_case in value_err_cases:
-            self.assertRaises(ValueError, test_case)
+            self.assertRaises(ValueError, self.gram.crop, test_case)
 
         for test_case in type_err_cases:
-            self.assertRaises(TypeError, test_case)
+            self.assertRaises(TypeError, self.gram.crop, test_case)
 
 class TestWavLTSA(TestLTSA):
     
     def set_gram(self):
+        '''
+        Create a WavLTSA for testing. 
+        '''
         wav = '/home/ryan/trains.wav'
         self.gram = WavLTSA(wav)
         self.gram()
@@ -142,6 +145,12 @@ class TestWavLTSA(TestLTSA):
 class TestRawLTSA(TestLTSA):
     
     def set_gram(self):
+        '''
+        Generate some raw data for testing. 
+
+        Data is a chirp sweeping from 100Hz to 10kHz logarithmically over 10
+        seconds at a 44.1kHz sampling rate.
+        '''
         fs = 44100
         t_begin = 0
         t_end = 100
