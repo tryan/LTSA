@@ -2,13 +2,16 @@ from __future__ import division
 import unittest as ut
 import numpy as np
 from ltsa import *
+from scipy.signal import chirp
 
 class TestLTSA(ut.TestCase):
 
     def set_gram(self):
-        self.gram = WavLTSA('/home/ryan/trains.wav')
-        self.gram.compute()
-        return self.gram
+        '''
+        Subclasses implement this method to initialize the LTSA, compute it,
+        and return the LTSA object
+        '''
+        self.gram = None
 
     def test_scale_to_uint8(self):
         self.set_gram()
@@ -71,7 +74,7 @@ class TestLTSA(ut.TestCase):
             self.assertRaises(ValueError, self.gram.show, case)
 
         # imresize should raise an error on bad interp values
-        interp_err_cases = ['failme', 13, lambda: bilinear]
+        interp_err_cases = ['failme', 13, lambda: 'bilinear']
         for case in interp_err_cases:
             self.assertRaises(KeyError, self.gram.show, (800,800), case)
 
@@ -128,10 +131,30 @@ class TestLTSA(ut.TestCase):
         for test_case in type_err_cases:
             self.assertRaises(TypeError, test_case)
 
+class TestWavLTSA(TestLTSA):
+    
+    def set_gram(self):
+        wav = '/home/ryan/trains.wav'
+        self.gram = WavLTSA(wav)
+        self.gram()
+        return self.gram
+
+class TestRawLTSA(TestLTSA):
+    
+    def set_gram(self):
+        fs = 44100
+        t_begin = 0
+        t_end = 100
+        t = np.linspace(t_begin, t_end, (t_end - t_begin)*fs)
+        signal = chirp(t, f0=100, t1=100, f1=10000, method='logarithmic')
+        self.gram = RawLTSA(signal, fs)
+        self.gram()
+        return self.gram
 
 def suite():
     suite = ut.TestSuite()
-    suite.addTest(ut.makeSuite(TestLTSA))
+    suite.addTest(ut.makeSuite(TestWavLTSA))
+    suite.addTest(ut.makeSuite(TestRawLTSA))
     return suite
 
 
