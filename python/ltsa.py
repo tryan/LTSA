@@ -73,9 +73,9 @@ class LTSA():
 
         # check for input sanity
         if tmin < self.tmin or tmax <= tmin or tmax < 0:
-            raise ValueError('tmin and/or tmax out of range')
+            raise ValueError('tmin (%.3f) and/or tmax (%.3f) out of range' % tmin, tmax)
         if fmin < self.fmin or fmax <= fmin or fmax < 0:
-            raise ValueError('fmin and/or fmax out of range')
+            raise ValueError('fmin (%.3f) and/or fmax (%.3f) out of range' % fmin, fmax)
 
         # update time and frequency limits
         self.tmin = tmin
@@ -156,7 +156,7 @@ class LTSA():
         elif isinstance(resize, int):
             # downsample (without lowpass filtering)
             if resize < 1 or resize > self.ltsa.shape[0]:
-                raise ValueError('resize argument out of range')
+                raise ValueError('resize out of range: %s' % str(resize))
 
             h = resize # img height in pixels
             idx = np.floor(np.linspace(0, np.size(self.ltsa, 0)-1, h))
@@ -169,7 +169,7 @@ class LTSA():
             img = self.ltsa
 
         else:
-            raise TypeError('resize argument not of acceptable type')
+            raise TypeError('resize not of acceptable type: %s' % str(resize))
 
         # set correct labels on image
         ext = (self.tmin, self.tmax, self.fmin, self.fmax)
@@ -306,7 +306,7 @@ class WavLTSA(LTSA):
             if self.signal.ndim > 1:
                 self.signal = self.signal[:,channel] # take only one channel
         else:
-            raise TypeError('Input must be a path to a .wav file')
+            raise TypeError('Input is not a path to a .wav file: %s' % str(_file))
 
         self._init_params()
 
