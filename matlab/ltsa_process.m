@@ -1,8 +1,8 @@
-function ltsa = ltsa_process(data, div_len, subdiv_len, noverlap, nfft)
+function ltsa = ltsa_process(signal, div_len, subdiv_len, noverlap, nfft)
 %{
 Process raw audio data into an LTSA image. 
 
-data
+signal
 raw audio data (one dimension array of real numbers)
 
 div_len
@@ -19,7 +19,7 @@ length of fft to apply to each subdivision -- defaults to subdiv_len
 %}
 
 if nargin < 3
-    error('Three arguments required by ltsa_process_data');
+    error('Three arguments required by ltsa_process');
 end
 if nargin < 5
     nfft = -1;
@@ -31,30 +31,30 @@ end
 % nfft shouldn't be shorter than subdiv_len
 if nfft < subdiv_len
     nfft = subdiv_len;
-    warning('ltsa_process_data: nfft has been assigned subdiv_len (%d)',...
+    warning('ltsa_process: nfft has been assigned subdiv_len (%d)',...
         subdiv_len);
 end
 
 % input sanity checks
-assert(isvector(data) && isreal(data), 'data is not usable for LTSA');
+assert(isvector(signal) && isreal(signal), 'signal is not usable for LTSA');
 assert(div_len > subdiv_len);
-assert(length(data) > div_len, 'data too short');
+assert(length(signal) > div_len, 'signal too short');
 
 % ensure nfft is even
 nfft = nfft + mod(nfft, 2);
 
-if size(data, 2) ~= 1
-    data = data';
+if size(signal, 2) ~= 1
+    signal = signal';
 end
 
 % number of time divisions in LTSA
-ndivs = floor( length(data)/div_len );
+ndiv = floor( length(signal)/div_len );
 
 % remove data that doesn't fit into last division
-data = data(1 : ndivs * div_len);
+signal = signal(1 : ndivs * div_len);
 
 % separate divisions into columns
-divs = reshape(data, div_len, ndivs);
+divs = reshape(signal, div_len, ndivs);
 
 % allocate image
 ltsa = single(zeros(nfft/2, ndivs));
@@ -65,13 +65,13 @@ for i = 1:ndivs
     ltsa(:, i) = single( log(tmp) );
 end
 
-end % ltsa_process_data
+end % ltsa_process
 
 function spectrum = calc_spectrum(div, subdiv_len, nfft, noverlap)
 
 % Calculates the average spectrum of one time division of data.
 % 
-% For each subdivision of the data, apply a Hanning window and calculate
+% For each subdivision of the signal, apply a Hanning window and calculate
 % the spectrum. Average these together to get the spectrum of the division.
 
 spectrum = zeros(nfft/2, 1);
