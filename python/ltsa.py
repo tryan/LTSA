@@ -216,7 +216,8 @@ class LTSA():
         spectrum = np.zeros((self.nfft/2,))
         window = np.hanning(self.subdiv_len)
         slip = self.subdiv_len - self.noverlap
-        # assert(slip > 0)
+        if slip <= 0:
+            raise ValueError('overlap exceeds subdiv_len, slip = %s' % str(slip))
 
         lo = 0
         hi = self.subdiv_len
