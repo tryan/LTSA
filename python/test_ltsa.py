@@ -8,16 +8,27 @@ class TestLTSA(ut.TestCase):
 
     def set_gram(self):
         '''
+        Abstract method 
+        
         Subclasses implement this method to initialize the LTSA, compute it,
-        and return the LTSA object
+        and return the LTSA object in preparation for tests to be run using the
+        LTSA object
         '''
         self.gram = None
 
     def test_sanity(self):
         # some general sanity checks
         gram = self.set_gram()
+
+#       default parameters shouldn't be too weird
+        self.assertTrue(gram.div_len >= gram.subdiv_len)
+        self.assertTrue(gram.nfft >= gram.subdiv_len)
         
+#       number of divs should equal number of columns in the ltsa
         self.assertEqual(gram.ndivs, gram.ltsa.shape[1])
+
+#       should be nfft/2 pixels per column in the ltsa
+        self.assertEqual(gram.nfft/2, gram.ltsa.shape[0])
 
     def test_scale_to_uint8(self):
         gram = self.set_gram()
@@ -136,6 +147,7 @@ class TestLTSA(ut.TestCase):
 
         for case in type_err_cases:
             self.assertRaises(TypeError, gram.crop, case)
+
 
 class TestWavLTSA(TestLTSA):
     '''
