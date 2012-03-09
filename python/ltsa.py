@@ -12,9 +12,10 @@ class LTSA():
 
     Abstract -- do not instantiate. Subclasses should implement a constructor
     at minimum. Constructors of derived classes are responsible for getting the
-    raw audio data into self.raw
+    raw audio data into self.signal
 
-    An algorithm for computing spectral visualizations of long audio signals.
+    Methods implement an algorithm for computing spectral visualizations of
+    long audio signals.
 
     See WavLTSA, RawLTSA for concrete classes implementing the LTSA
     '''
