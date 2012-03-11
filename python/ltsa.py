@@ -74,9 +74,9 @@ class LTSA():
 
         # check for input sanity
         if tmin < self.tmin or tmax <= tmin or tmax < 0:
-            raise ValueError('tmin (%.3f) and/or tmax (%.3f) out of range' % tmin, tmax)
+            raise ValueError('tmin (%.3f) and/or tmax (%.3f) out of range' % (tmin, tmax))
         if fmin < self.fmin or fmax <= fmin or fmax < 0:
-            raise ValueError('fmin (%.3f) and/or fmax (%.3f) out of range' % fmin, fmax)
+            raise ValueError('fmin (%.3f) and/or fmax (%.3f) out of range' % (fmin, fmax))
 
         # update time and frequency limits
         self.tmin = tmin
