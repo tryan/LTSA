@@ -50,15 +50,14 @@ class TestLTSA(ut.TestCase):
                          'invalid_index']
 
         for case in key_err_cases:
-            self.assertRaises(Exception, gram.__getitem__, case)
+            self.assertRaises(Exception, gram.__getitem__, *case)
 
         # these values should raise an error if assigned to gram[0,0]
         set_err_cases = ['invalid_value',
-                         (3, 2),
-                         lambda x: x + 1]
+                         (3, 2)]
 
         for case in set_err_cases:
-            self.assertRaises(Exception, gram.__setitem__, (0,0), case)
+            self.assertRaises(Exception, gram.__setitem__, (0,0), *case)
 
     def test_show(self):
         # setup the tests
@@ -79,13 +78,12 @@ class TestLTSA(ut.TestCase):
         type_err_cases = ['Fred',
                           (800, 800, 5),
                           (800.5, 800),
-                          lambda: 800,
-                          300.5]
+                          (300.5,)]
 
         value_err_cases = [-1, 1000**2]
 
         for case in type_err_cases:
-            self.assertRaises(TypeError, self.gram.show, case)
+            self.assertRaises(TypeError, self.gram.show, *case)
 
         for case in value_err_cases:
             self.assertRaises(ValueError, self.gram.show, case)
@@ -143,7 +141,7 @@ class TestLTSA(ut.TestCase):
                           lambda: 3]
 
         for case in value_err_cases:
-            self.assertRaises(ValueError, gram.crop, case)
+            self.assertRaises(ValueError, gram.crop, *case)
 
         for case in type_err_cases:
             self.assertRaises(TypeError, gram.crop, case)
