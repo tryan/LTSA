@@ -101,14 +101,17 @@ class LTSA():
         
     def _init_params(self):
         '''
-        Initialize some useful class attributes to default values
+        Initialize some useful class attributes to default values, including
+        the parameters that govern the LTSA computation and the show and crop
+        methods.
 
-        For use in constructors
+        This method should be run by the constructor once the signal data and
+        sampling frequency have been populated. 
         '''
-        # defaults for user adjustable values
+        # defaults for LTSA algorithm parameters
         self.div_len = np.round(self.fs/2) # half second divisions
         self.subdiv_len = 2**np.round(np.log2(self.fs/5))
-        self.nfft = None
+        self.nfft = None # will be checked and assigned in the compute method
         self.noverlap = 0
 
         # useful values
