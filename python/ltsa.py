@@ -41,6 +41,8 @@ class LTSA():
         for key, val in var_dict.iteritems():
             vars(self)[key] = val
 
+        self._set_nvals()
+
     def crop(self, tmin=0, tmax=None, fmin=0, fmax=None):
         '''
         Crop the computed LTSA in time and/or frequency. Anything that is
@@ -99,6 +101,14 @@ class LTSA():
         return div_low, div_high, freq_low, freq_high
 
         
+    def _set_nvals(self):
+        '''
+        Computes and sets the nsamples, ndivs, and nsubdivs attributes
+        '''
+        self.nsamples = self.signal.size
+        self.ndivs = np.floor(self.nsamples / self.div_len)
+        self.nsubdivs = np.floor(self.div_len / (self.subdiv_len - self.noverlap))
+
     def _init_params(self):
         '''
         Initialize some useful class attributes to default values, including
@@ -114,10 +124,7 @@ class LTSA():
         self.nfft = None # will be checked and assigned in the compute method
         self.noverlap = 0
 
-        # useful values
-        self.nsamples = self.signal.size
-        self.ndivs = np.floor(self.nsamples / self.div_len)
-        self.nsubdivs = np.floor(self.div_len / (self.subdiv_len - self.noverlap))
+        self._set_nvals()
 
         # time and frequency limits, used for displaying results
         self.tmin = 0
