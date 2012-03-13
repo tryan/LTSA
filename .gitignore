@@ -7,3 +7,4 @@ octave-core
 *.wav
 mp3read.m
 *.pyc
+.coverage
