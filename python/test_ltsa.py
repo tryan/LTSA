@@ -16,6 +16,23 @@ class TestLTSA(ut.TestCase):
         '''
         self.gram = None
 
+    def test_set_params(self):
+        gram = self.set_gram()
+        params = { 
+            'div_len': 44100,
+            'subdiv_len': 4096,
+            'nfft': 4096,
+            'noverlap': 500
+        }
+
+        # check that parameters have been set
+        gram.set_params(params)
+        for key, val in params.iteritems():
+            self.assertEqual(val, vars(gram)[key])
+
+        # check that gram still computes
+        gram()
+
     def test_sanity(self):
         # some general sanity checks
         gram = self.set_gram()
@@ -30,15 +47,21 @@ class TestLTSA(ut.TestCase):
 #       should be nfft/2 pixels per column in the ltsa
         self.assertEqual(gram.nfft/2, gram.ltsa.shape[0])
 
+        # if noverlap >= subdiv_len, raise an error
+        gram.noverlap = gram.subdiv_len
+        self.assertRaises(ValueError, gram.compute)
+        gram.noverlap = gram.subdiv_len + 50000
+        self.assertRaises(ValueError, gram.compute)
+
     def test_scale_to_uint8(self):
         gram = self.set_gram()
         gram.scale_to_uint8()
         self.assertTrue(gram.ltsa.dtype == 'uint8')
 
     def test_magic_methods(self):
-        # check setitem and getitem
         gram = self.set_gram()
 
+        # check setitem and getitem
         # these shouldn't raise errors
         tmp = gram[0,0]
         tmp = gram[:,1]
@@ -53,11 +76,11 @@ class TestLTSA(ut.TestCase):
             self.assertRaises(Exception, gram.__getitem__, *case)
 
         # these values should raise an error if assigned to gram[0,0]
-        set_err_cases = ['invalid_value',
+        set_err_cases = [('invalid_value',),
                          (3, 2)]
 
         for case in set_err_cases:
-            self.assertRaises(Exception, gram.__setitem__, (0,0), *case)
+            self.assertRaises(Exception, gram.__setitem__, 0, 0, *case)
 
     def test_show(self):
         # setup the tests
@@ -75,7 +98,7 @@ class TestLTSA(ut.TestCase):
         self.assertEqual(img.shape, (600, t_size))
 
         # nonsensical types passed as resize should raise TypeError
-        type_err_cases = ['Fred',
+        type_err_cases = [('Fred',),
                           (800, 800, 5),
                           (800.5, 800),
                           (300.5,)]
@@ -162,6 +185,16 @@ class TestWavLTSA(TestLTSA):
         self.gram()
         return self.gram
 
+    def test_init(self):
+        test_cases = [
+            'fred.mp3',
+            lambda: 3,
+            14
+        ]
+
+        for case in test_cases:
+            self.assertRaises(TypeError, WavLTSA, case)
+
 class TestRawLTSA(TestLTSA):
     '''
     Class for testing the RawLTSA class. The LTSA class tests are independent
@@ -184,7 +217,18 @@ class TestRawLTSA(TestLTSA):
         self.gram()
         return self.gram
 
-def suite():
+    def test_init(self):
+        test_cases = [
+            np.zeros((5,5)),
+            3,
+            'fred'
+        ]
+
+        for case in test_cases:
+            self.assertRaises(TypeError, RawLTSA, case)
+    
+
+def get_suite():
     suite = ut.TestSuite()
     suite.addTest(ut.makeSuite(TestWavLTSA))
     suite.addTest(ut.makeSuite(TestRawLTSA))
@@ -192,4 +236,4 @@ def suite():
 
 
 #suite = ut.TestLoader().loadTestsFromTestCase(TestLTSA)
-ut.TextTestRunner(verbosity=2).run(suite())
+ut.TextTestRunner(verbosity=2).run(get_suite())
