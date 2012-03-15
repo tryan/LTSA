@@ -70,14 +70,15 @@ class TestLTSA(ut.TestCase):
 
 #       these are invalid access keys and should raise an error
         key_err_cases = [(1, 2, 3),
-                         'invalid_index']
+                         ('invalid_index',)]
 
         for case in key_err_cases:
             self.assertRaises(Exception, gram.__getitem__, *case)
 
         # these values should raise an error if assigned to gram[0,0]
         set_err_cases = [('invalid_value',),
-                         (3, 2)]
+                         (3, 2),
+                         ((3, 2),)]
 
         for case in set_err_cases:
             self.assertRaises(Exception, gram.__setitem__, 0, 0, *case)
@@ -161,7 +162,8 @@ class TestLTSA(ut.TestCase):
         
         type_err_cases = ['fred',
                           1+1j,
-                          lambda: 3]
+                          lambda: 3,
+                          (30, 50)]
 
         for case in value_err_cases:
             self.assertRaises(ValueError, gram.crop, *case)
