@@ -70,7 +70,7 @@ class LTSA():
         # check inputs are all real numbers
         inputs = [tmin, tmax, fmin, fmax]
         for val in inputs:
-            if not np.isreal(val) or not isinstance(val, Number):
+            if not (isinstance(val, Number) and np.isreal(val)):
                 raise TypeError('all inputs must be real numbers')
 
         # check for input sanity
