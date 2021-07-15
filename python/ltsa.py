@@ -3,7 +3,6 @@ import numpy as np
 from numpy.fft import rfft
 from scipy.io.wavfile import read as wavread
 import matplotlib.pyplot as plt
-from scipy.misc import imresize
 from numbers import Number
 
 class LTSA():
@@ -161,8 +160,12 @@ class LTSA():
         information.
         '''
         if isinstance(resize, tuple) and len(resize) == 2:
-            # use scipy.misc.imresize
-            img = imresize(self.ltsa, resize, interp)
+            #img = imresize(self.ltsa, resize, interp)
+
+            import PIL
+            pimg = PIL.Image.fromarray(self.ltsa)
+            pimg = pimg.resize(resize, resample=interp)
+            img = np.asarray(pimg)
 
         elif isinstance(resize, int):
             # downsample (without lowpass filtering)

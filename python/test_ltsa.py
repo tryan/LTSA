@@ -115,7 +115,7 @@ class TestLTSA(ut.TestCase):
         # imresize should raise an error on bad interp values
         interp_err_cases = ['failme', 13, lambda: 'bilinear']
         for case in interp_err_cases:
-            self.assertRaises(KeyError, self.gram.show, (800,800), case)
+            self.assertRaises(ValueError, self.gram.show, (800,800), case)
 
     
     def test_crop(self):
