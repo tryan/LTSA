@@ -182,7 +182,7 @@ class TestWavLTSA(TestLTSA):
         '''
         Create a WavLTSA for testing. 
         '''
-        wav = '/home/ryan/trains.wav'
+        wav = '/home/tk/bensound-slowmotion.wav'
         self.gram = WavLTSA(wav)
         self.gram()
         return self.gram
